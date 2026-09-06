@@ -19,3 +19,7 @@ samples/**/*.db-wal
 # Claude Code local settings
 .claude/settings.local.json
 CLAUDE.md
+
+# Private (local-only) notes — never commit, never publish
+/NOTES.private.md
+
