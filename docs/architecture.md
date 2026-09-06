@@ -19,41 +19,41 @@ container) plus a set of panels/views around it:
   `SolutionTreeDataProvider` (`src/solutionExplorer/tree/solutionTreeDataProvider.ts`).
 - The container `csharp-solution-explorer-activitybar` hosts, **in vertical order** (top first —
   order is the order in `contributes.views`):
-  1. **(fork)** the run toolbar view `csharpSolutionExplorer.runControlsView` — "Start",
-  2. **(fork)** the file-search bar view `csharpSolutionExplorer.searchBarView` — "Search Files",
-  3. the tree view `csharpSolutionExplorer.view` — "Solution Explorer".
+  1. **(fork)** the single control bar `csharpSolutionExplorer.runControlsView` — "Run & Search"
+     (▶ Start, build configuration, file filter),
+  2. the tree view `csharpSolutionExplorer.view` — "Solution Explorer".
   Users can reorder these by dragging; the contributed order is only the default.
 - Panels (editor tabs, not views) cover NuGet, Project Properties, Options and the Test Run
   Dashboard; the debugger/test-explorer/language-server subsystems are activated from
   `src/extension.ts`.
 
-### The two webview rows (fork UI pattern)
+### The control bar (fork UI pattern)
 
-Both fork rows are slim `WebviewViewProvider`s with inline HTML (nonce-based CSP, no `media/`
-assets). They follow the same contract:
+The single fork row is a slim `WebviewViewProvider` with inline HTML (nonce-based CSP, no `media/`
+assets), carrying ▶, the configuration dropdown and the file filter. Message contract:
 
 - Extension → view: `webview.postMessage({ type: "state", ... })` — the host is the source of truth
   and pushes full state; the view never assumes anything.
 - View → extension: `postMessage({ type: "action", ... })` — e.g. `filter`/`start`/`config`.
 - `retainContextWhenHidden: true` keeps the input value across view toggling.
 
-`makeNonce()` comes from `src/shared/webviewHtml.ts`. See `search/registerFileSearch.ts` and
-`runControls/registerRunControls.ts` for the two complete examples.
+`makeNonce()` comes from `src/shared/webviewHtml.ts`. See `runControls/registerRunControls.ts` for
+the complete example.
 
 ---
 
-## 2. (fork) Whole-solution file search
+## 2. (fork) Filtering the tree like Visual Studio's search
 
-UI: the **Search Files** row above the tree. Behaviour mirrors Visual Studio's Solution Explorer
-search: typing keeps only files whose **file name** contains the text, with the folders and
-projects that lead to them, and every match is auto-revealed/expanded.
+UI: the **filter box** at the right end of the Run & Search bar. Behaviour mirrors Visual Studio's
+Solution Explorer search: typing keeps only files whose **file name** contains the text, with the
+folders and projects that lead to them, and every match is auto-revealed/expanded.
 
 ### Files
 
 | File | Role |
 | --- | --- |
 | `src/solutionExplorer/search/fileNameMatch.ts` | Pure matching rules (no `vscode` import → unit-tested). |
-| `src/solutionExplorer/search/registerFileSearch.ts` | Webview row, `registerFileSearch()`, clear command, context key. |
+| `src/solutionExplorer/runControls/registerRunControls.ts` | The Run & Search bar (▶, config, filter), filter funnel, clear command/context key. |
 | changes in `tree/solutionTreeDataProvider.ts` | Filtered snapshot + `setSearchFilter()` + status event. |
 
 ### Design decisions
@@ -99,10 +99,11 @@ projects that lead to them, and every match is auto-revealed/expanded.
 
 ---
 
-## 3. (fork) Run toolbar + build configuration
+## 3. (fork) Run & Search bar — Start + build configuration
 
-UI: the **Start** row above the tree — a green ▶ and a configuration dropdown. It mirrors the
-parts of Visual Studio's toolbar people use most: *Start* and *Debug/Release*.
+UI: the **Run & Search** row above the tree — a green ▶, the build-configuration dropdown and the
+file filter. It mirrors the parts of Visual Studio's toolbar people use most: *Start*,
+*Debug/Release*, and searching the explorer.
 
 ### Files
 
@@ -110,7 +111,7 @@ parts of Visual Studio's toolbar people use most: *Start* and *Debug/Release*.
 | --- | --- |
 | `src/solutionExplorer/runControls/buildConfigurationState.ts` | Persisted per-workspace configuration (module singleton, see §5). |
 | `src/solutionExplorer/runControls/buildConfigurations.ts` | Pure: parse `<Configurations>` from a csproj + merge with defaults (unit-tested). |
-| `src/solutionExplorer/runControls/registerRunControls.ts` | Webview row + `registerRunControls()`. |
+| `src/solutionExplorer/runControls/registerRunControls.ts` | The bar (webview), filter funnel, clear command/context key, top-bar "Build Configuration…" quick pick. |
 | edits | `extension.ts` (init/register), `commands/buildCommands.ts`, `debug/debugConfigurationProvider.ts`, `debug/externalTerminal/externalTerminalDebug.ts` (threading), `launchProfiles/launchProfileCommands.ts` + `workspaceProjects.ts` (startup gating). |
 
 ### ▶ Start — no launch.json, ever

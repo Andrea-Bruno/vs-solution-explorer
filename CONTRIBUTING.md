@@ -84,3 +84,10 @@ One logical change per pull request. Update `CHANGELOG.md` when the change is vi
 
 Bugs and feature requests go through the [issue templates](.github/ISSUE_TEMPLATE). Security
 vulnerabilities do **not** — see [SECURITY.md](SECURITY.md).
+
+## Fork-specific docs
+
+Design rationale of the fork additions (file filter, Run & Search bar, build configuration,
+release automation) and the operating procedures (upstream sync, releasing, open items) live in
+[docs/architecture.md](docs/architecture.md) and [docs/fork-guide.md](docs/fork-guide.md) — they are
+not part of the user-facing README.
