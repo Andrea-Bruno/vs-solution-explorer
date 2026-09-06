@@ -19,6 +19,7 @@ import {
   TargetProject,
 } from "../../solutionExplorer/workspaceProjects.js";
 import { getStartupProjectFsPath } from "../../solutionExplorer/launchProfiles/launchProfileState.js";
+import { getBuildConfiguration } from "../../solutionExplorer/runControls/buildConfigurationState.js";
 import { spawnForAttach, TerminalHost } from "./attachTerminal.js";
 import { buildExternalAttachConfig, buildLaunchConfig } from "../debugConfig.js";
 import { CONFIG_SECTION } from "../debugSettings.js";
@@ -52,7 +53,7 @@ export async function startDebuggingInExternalTerminal(
     output.appendLine(line);
   };
 
-  const configuration = "Debug";
+  const configuration = getBuildConfiguration();
   try {
     if (vscode.workspace.getConfiguration(CONFIG_SECTION).get<boolean>("buildBeforeLaunch", true)) {
       state.set({ phase: "building", activity: `Building ${project.name}…` });

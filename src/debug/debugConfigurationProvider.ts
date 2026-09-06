@@ -12,6 +12,7 @@ import {
   TargetProject,
 } from "../solutionExplorer/workspaceProjects.js";
 import { getStartupProjectFsPath } from "../solutionExplorer/launchProfiles/launchProfileState.js";
+import { getBuildConfiguration } from "../solutionExplorer/runControls/buildConfigurationState.js";
 import { makeReporter } from "../shared/httpDownload.js";
 import { buildLaunchConfig, DEBUG_TYPE, NetcoredbgLaunchConfig } from "./debugConfig.js";
 import { CONFIG_SECTION, shouldOfferConfigurations } from "./debugSettings.js";
@@ -159,7 +160,8 @@ export class NetcoredbgConfigurationProvider implements vscode.DebugConfiguratio
       return undefined;
     }
     const project = projectFromUri(vscode.Uri.file(partial.project));
-    const configuration = partial.configuration ?? "Debug";
+    // A launch.json "configuration" field outranks the run toolbar's selection.
+    const configuration = partial.configuration ?? getBuildConfiguration();
 
     try {
       if (partial.build !== false && this.buildBeforeLaunch()) {

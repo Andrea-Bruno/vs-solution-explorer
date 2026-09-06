@@ -4,13 +4,17 @@ import { runInExternalTerminal } from "../externalTerminal.js";
 import { resolveActiveProfileName } from "../launchProfiles/launchProfileCommands.js";
 import { projectFromUri, promptForStartupProject, TargetProject } from "../workspaceProjects.js";
 import { getStartupProjectFsPath, NO_PROFILE } from "../launchProfiles/launchProfileState.js";
+import { getBuildConfiguration } from "../runControls/buildConfigurationState.js";
 import { ProjectTreeItem, SolutionTreeItem } from "../tree/treeItems.js";
 import { maxCpuArgs, msbuildNodeEnv } from "../../shared/msbuild.js";
 
 // Build/Rebuild/Test/Restore/Clean accept both a project (.csproj) and a solution (.sln/.slnx) path;
 // both tree items carry `info.uri`.
 export function buildTarget(item: ProjectTreeItem | SolutionTreeItem): void {
-  runInTerminal("C# Solution Explorer: Build", `dotnet build "${item.info.uri.fsPath}"${cpuSwitch()}`);
+  runInTerminal(
+    "C# Solution Explorer: Build",
+    `dotnet build "${item.info.uri.fsPath}" -c ${getBuildConfiguration()}${cpuSwitch()}`,
+  );
 }
 
 // `--no-incremental` forces a full recompile in a single command, so it works in every shell
@@ -18,7 +22,7 @@ export function buildTarget(item: ProjectTreeItem | SolutionTreeItem): void {
 export function rebuildTarget(item: ProjectTreeItem | SolutionTreeItem): void {
   runInTerminal(
     "C# Solution Explorer: Build",
-    `dotnet build "${item.info.uri.fsPath}" --no-incremental${cpuSwitch()}`,
+    `dotnet build "${item.info.uri.fsPath}" --no-incremental -c ${getBuildConfiguration()}${cpuSwitch()}`,
   );
 }
 
@@ -30,7 +34,10 @@ function cpuSwitch(): string {
 }
 
 export function testTarget(item: ProjectTreeItem | SolutionTreeItem): void {
-  runInTerminal("C# Solution Explorer: Test", `dotnet test "${item.info.uri.fsPath}"`);
+  runInTerminal(
+    "C# Solution Explorer: Test",
+    `dotnet test "${item.info.uri.fsPath}" --configuration ${getBuildConfiguration()}`,
+  );
 }
 
 /**
@@ -69,7 +76,7 @@ async function buildRunCommand(uri: vscode.Uri, name: string, rootDir: vscode.Ur
   }
   const profile = await resolveActiveProfileName(uri, rootDir);
 
-  const parts = [`dotnet run --project "${uri.fsPath}"`];
+  const parts = [`dotnet run --project "${uri.fsPath}" --configuration ${getBuildConfiguration()}`];
   if (framework) {
     parts.push(`--framework ${framework}`);
   }

@@ -1247,6 +1247,10 @@
     "views": {
       "csharp-solution-explorer-activitybar": [
         {
+          "id": "csharpSolutionExplorer.runControlsView",
+          "name": "Start"
+        },
+        {
           "id": "csharpSolutionExplorer.searchBarView",
           "name": "Search Files"
         },
