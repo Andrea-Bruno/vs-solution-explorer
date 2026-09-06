@@ -40,7 +40,7 @@ const PURPOSE = {
 };
 
 function productionPackages() {
-  const raw = execFileSync("npm", ["ls", "--omit=dev", "--all", "--json", "--long"], {
+  const raw = runNpm(["ls", "--omit=dev", "--all", "--json", "--long"], {
     cwd: repoRoot,
     encoding: "utf8",
     maxBuffer: 32 * 1024 * 1024,
@@ -57,6 +57,20 @@ function productionPackages() {
   };
   walk(JSON.parse(raw), 0);
   return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name) || a.version.localeCompare(b.version));
+}
+
+/**
+ * Runs an npm command. Under `npm run`/`npm exec` the `npm_execpath` environment variable points at
+ * npm's own cli.js, which lets Node run it directly — spawning the `npm` executable itself fails on
+ * Windows, where it only exists as an `npm.cmd` shim that `execFileSync` cannot launch without a
+ * shell. Standalone invocations (e.g. CI on Linux) fall back to the plain `npm` executable.
+ */
+function runNpm(args, options) {
+  const npmCli = process.env.npm_execpath;
+  if (npmCli) {
+    return execFileSync(process.execPath, [npmCli, ...args], options);
+  }
+  return execFileSync("npm", args, options);
 }
 
 function licenseText(pkg) {

@@ -1,18 +1,18 @@
 {
-  "name": "jomblebee-csharp-solution-explorer",
-  "displayName": "C# Solution Explorer",
-  "description": "A C# Solution Explorer for VS Code and Open VSX editors, with an optional bundled Roslyn language server for IntelliSense — no proprietary extensions required.",
+  "name": "csharp-solution-explorer-community",
+  "displayName": "VS Solution Explorer",
+  "description": "Bring the familiar Microsoft Visual Studio (2022/2026) experience to VS Code. A dedicated VS Solution Explorer shows your whole solution — including projects outside the opened folder — with Solution Folders, per-project Dependencies, file nesting, NuGet management, launch profiles, F5 debugging, a native Test Explorer and a whole-solution file search that filters the tree like Visual Studio's. Optional bundled Roslyn language server for IntelliSense. Community fork of Jomblebee's extension — the Visual Studio workflow everyone already knows, without the proprietary lock-in.",
   "version": "0.16.0",
-  "publisher": "jomblebee",
+  "publisher": "andreabruno",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jomblebee/csharp-solution-explorer"
+    "url": "https://github.com/Andrea-Bruno/vs-solution-explorer"
   },
   "bugs": {
-    "url": "https://github.com/Jomblebee/csharp-solution-explorer/issues"
+    "url": "https://github.com/Andrea-Bruno/vs-solution-explorer/issues"
   },
-  "homepage": "https://github.com/Jomblebee/csharp-solution-explorer#readme",
+  "homepage": "https://github.com/Andrea-Bruno/vs-solution-explorer#readme",
   "galleryBanner": {
     "color": "#1e1e1e",
     "theme": "dark"
@@ -1247,6 +1247,14 @@
     "views": {
       "csharp-solution-explorer-activitybar": [
         {
+          "id": "csharpSolutionExplorer.runControlsView",
+          "name": "Start"
+        },
+        {
+          "id": "csharpSolutionExplorer.searchBarView",
+          "name": "Search Files"
+        },
+        {
           "id": "csharpSolutionExplorer.view",
           "name": "Solution Explorer"
         }
@@ -1275,6 +1283,12 @@
         "command": "csharpSolutionExplorer.refresh",
         "title": "Refresh",
         "icon": "$(refresh)",
+        "category": "C# Solution Explorer"
+      },
+      {
+        "command": "csharpSolutionExplorer.search.clear",
+        "title": "Clear File Search",
+        "icon": "$(close)",
         "category": "C# Solution Explorer"
       },
       {
@@ -1617,6 +1631,11 @@
           "command": "csharpSolutionExplorer.refresh",
           "when": "view == csharpSolutionExplorer.view",
           "group": "navigation"
+        },
+        {
+          "command": "csharpSolutionExplorer.search.clear",
+          "when": "view == csharpSolutionExplorer.view && csharpSolutionExplorer.searchActive",
+          "group": "navigation@10"
         },
         {
           "command": "csharpSolutionExplorer.openPackageManager",
@@ -1974,6 +1993,9 @@
     "vsix": "node -e \"require('node:fs').mkdirSync('artifacts', { recursive: true })\" && vsce package --out artifacts/",
     "sample:clean": "node scripts/clean-samples.mjs",
     "sample:reset-coverage": "node scripts/reset-sample-coverage.mjs",
+    "release:major": "node scripts/bump-release.mjs major",
+    "release:minor": "node scripts/bump-release.mjs minor",
+    "release:patch": "node scripts/bump-release.mjs patch",
     "release:tag": "node scripts/tag-release.mjs"
   },
   "dependencies": {

@@ -10,6 +10,12 @@ import {
 import { configureMsbuild } from "./shared/msbuild.js";
 import { activateTestExplorer } from "./testExplorer/activate.js";
 import { registerSolutionExplorerCommands } from "./solutionExplorer/commands/commands.js";
+import { registerFileSearch } from "./solutionExplorer/search/registerFileSearch.js";
+import { registerRunControls } from "./solutionExplorer/runControls/registerRunControls.js";
+import {
+  disposeBuildConfiguration,
+  initBuildConfiguration,
+} from "./solutionExplorer/runControls/buildConfigurationState.js";
 import { checkDotnetSdk } from "./solutionExplorer/dotnetSdkNotifier.js";
 import { SolutionTreeDragAndDropController } from "./solutionExplorer/tree/dragAndDropController.js";
 import {
@@ -29,6 +35,8 @@ export function activate(context: vscode.ExtensionContext): void {
   // Must precede the provider: it reads the startup project synchronously while building nodes,
   // so hydrating later would leave the first render undecorated.
   initLaunchProfileState(context);
+  // Same for the build configuration read by the run toolbar and every build/run/debug command.
+  initBuildConfiguration(context);
 
   const provider = new SolutionTreeDataProvider();
   const treeView = vscode.window.createTreeView("csharpSolutionExplorer.view", {
@@ -37,6 +45,8 @@ export function activate(context: vscode.ExtensionContext): void {
   });
 
   registerSolutionExplorerCommands(context, provider, treeView);
+  registerFileSearch(context, provider, treeView);
+  registerRunControls(context);
   registerAutoReveal(context, provider, treeView);
 
   context.subscriptions.push(
@@ -46,6 +56,7 @@ export function activate(context: vscode.ExtensionContext): void {
     // Redraw the startup decoration when the startup project changes.
     onDidChangeLaunchProfileState(() => provider.refresh()),
     { dispose: disposeLaunchProfileState },
+    { dispose: disposeBuildConfiguration },
     // Bring the NuGet manager back with its solution after a window reload, instead of an empty panel.
     vscode.window.registerWebviewPanelSerializer(NUGET_MANAGER_VIEW_TYPE, {
       deserializeWebviewPanel: (panel, state: unknown) =>

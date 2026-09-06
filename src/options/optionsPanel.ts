@@ -99,7 +99,7 @@ export class OptionsPanel {
       extensionUri: context.extensionUri,
       title: "C# Solution Explorer Options",
       styles: ["shared/panel.css", "options/main.css"],
-      scripts: ["shared/dom.js", "options/fields.js", "options/nav.js", "options/main.js"],
+      scripts: ["shared/dom.js", "options/fields.js", "shared/nav.js", "options/main.js"],
     });
 
     this.panel.onDidDispose(() => this.dispose(), null, this.disposables);

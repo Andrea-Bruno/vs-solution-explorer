@@ -1,7 +1,7 @@
 // Creates and pushes the release tag `v<version>` (version read from package.json), which triggers
-// the Release workflow (.github/workflows/release.yml): build VSIX → GitHub Release → Open VSX
-// publish. Because that publish is irreversible (Open VSX won't accept the same version twice), this
-// script refuses to run unless the state is clearly release-ready:
+// the Release workflow (.github/workflows/release.yml): build VSIX → GitHub Release → VS Marketplace
+// publish. Because that publish is irreversible (the Marketplace won't accept the same version
+// twice), this script refuses to run unless the state is clearly release-ready:
 //   - on the `main` branch,
 //   - working tree clean (no uncommitted changes),
 //   - local `main` in sync with `origin/main`,
@@ -55,5 +55,5 @@ git("tag", "-a", tag, "-m", tag);
 git("push", "origin", tag);
 
 console.log(`\n✓ Pushed ${tag}. The Release workflow will build the VSIX, create the GitHub Release,`);
-console.log(`  and publish to Open VSX. Watch it at:`);
-console.log(`  https://github.com/Jomblebee/csharp-solution-explorer/actions\n`);
+console.log(`  and publish to the VS Marketplace. Watch it at:`);
+console.log(`  https://github.com/Andrea-Bruno/vs-solution-explorer/actions\n`);

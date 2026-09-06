@@ -19,7 +19,7 @@ import {
 import { readLaunchSettings } from "./launchSettingsIo.js";
 import { promptForStartupProject, resolveTargetProject, TargetProject } from "../workspaceProjects.js";
 import { addProfile, deleteProfile, duplicateProfile, editProfile } from "./launchProfileEditor.js";
-import { isWebSdk, parseSdkAttribute, parseTargetFrameworks } from "../parsers/csprojReader.js";
+import { isDebuggableProject, isWebSdk, parseOutputType, parseSdkAttribute, parseTargetFrameworks } from "../parsers/csprojReader.js";
 
 /**
  * The profile name to pass to `dotnet run` for a project:
@@ -74,7 +74,28 @@ export async function setStartupProjectCommand(item: unknown): Promise<void> {
   if (!uri) {
     return;
   }
+  if (!(await isStartableProject(uri))) {
+    vscode.window.showWarningMessage(
+      `${fileName(uri)} is a library project and cannot be the startup project — only runnable (Exe/WinExe/web) projects can start.`,
+    );
+    return;
+  }
   setStartupProject(uri.fsPath);
+}
+
+/** Whether a project file is runnable/debuggable. A read failure fails open, like the picker. */
+async function isStartableProject(uri: vscode.Uri): Promise<boolean> {
+  try {
+    const bytes = await vscode.workspace.fs.readFile(uri);
+    const text = new TextDecoder().decode(bytes);
+    return isDebuggableProject(parseSdkAttribute(text), parseOutputType(text));
+  } catch {
+    return true;
+  }
+}
+
+function fileName(uri: vscode.Uri): string {
+  return uri.fsPath.split(/[\\/]/).pop() ?? uri.fsPath;
 }
 
 export function clearStartupProjectCommand(): void {

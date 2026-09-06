@@ -1,5 +1,10 @@
 # C# Solution Explorer
 
+> **Community fork** of [Jomblebee's C# Solution Explorer](https://github.com/Jomblebee/csharp-solution-explorer)
+> (MIT). This fork adds a whole-solution **Search Files** filter to the tree. The badges and most
+> of the documentation below describe the original extension; keep the `upstream` remote to merge
+> new releases back in.
+
 [![Open VSX](https://img.shields.io/open-vsx/v/jomblebee/jomblebee-csharp-solution-explorer?style=flat-square&label=Open%20VSX&color=a60ee5)](https://open-vsx.org/extension/jomblebee/jomblebee-csharp-solution-explorer)
 [![VS Marketplace](https://badgen.net/vs-marketplace/v/jomblebee.jomblebee-csharp-solution-explorer?label=VS%20Marketplace&color=0066b8)](https://marketplace.visualstudio.com/items?itemName=jomblebee.jomblebee-csharp-solution-explorer)
 [![VS Code ≥ 1.91](https://img.shields.io/badge/VS%20Code-%E2%89%A51.91-007ACC?style=flat-square)](https://code.visualstudio.com/)
@@ -27,6 +32,8 @@ The long-term goal is a VS Code extension that gives C# (and Razor) developers e
 - **Project Properties panel**: a project's csproj properties, NuGet package metadata and launch profiles as an editor tab, with a badge per property showing whether it is declared here, inherited from a `Directory.Build.props`, or an SDK default — and formatting-preserving, one-line-diff writes — see [Project Properties](docs/project-properties.md).
 - **Options panel**: the extension's settings as an editor tab in the spirit of Visual Studio's Options dialog — grouped cards, User/Workspace scope switcher, search, per-setting reset. VS Code's built-in Settings editor stays one click away — see [Settings](docs/settings.md#two-ways-to-edit-these).
 - **File nesting** groups related files under a parent, like Visual Studio (`appsettings.*.json`, `.xaml.cs`, `.Designer.cs`, `.razor` companions). Toggle with `csharpSolutionExplorer.fileNesting.enabled`.
+- **Search Files** (fork): a search box above the tree filters it Visual Studio style — only files whose name contains the typed text stay visible, with their parent chain revealed automatically. Searches every file the solution references, wherever the projects live on disk — [details](docs/commands.md#search-files-in-the-solution).
+- **Run toolbar** (fork): a Visual Studio-style ▶ **Start** button and build-configuration dropdown (Debug / Release, plus any `<Configurations>` a project declares) at the top of the Solution Explorer. ▶ debugs the startup project with no launch.json needed; the chosen configuration drives Build/Rebuild/Run/Test and every debug start. Only runnable (Exe/WinExe/web) projects can be the startup project.
 - **Auto-sync**: the active editor's file is selected (and its parents expanded) in the tree automatically — plus **Show in Solution Explorer** on demand.
 - **Copy / Cut / Paste** files and folders between folders and projects, and **drag and drop** projects between Solution Folders.
 - Manual refresh button and automatic refresh via a file system watcher.

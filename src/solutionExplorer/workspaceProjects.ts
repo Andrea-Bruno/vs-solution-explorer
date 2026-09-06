@@ -77,12 +77,6 @@ const GROUP_ICON: Record<ProjectGroup, string> = {
   library: "$(library)",
 };
 
-const GROUP_LABEL: Record<ProjectGroup, string> = {
-  runnable: "Runnable",
-  test: "Tests",
-  library: "Libraries",
-};
-
 function toStartupProjectItem(
   project: TargetProject,
   classification: ProjectClassification,
@@ -129,30 +123,31 @@ export async function promptForStartupProject(): Promise<TargetProject | undefin
       .map(async (entry) => details.set(entry.project.uri.fsPath, await profileSummary(entry.project))),
   );
 
-  // One flat list, but split into labeled sections so test projects sit in their own group
-  // (they used to be lumped into a collapsed "not runnable" bucket) instead of hidden.
+  // Only projects that can actually run may be the startup project — library and test projects are
+  // excluded here, matching the run toolbar's ▶ and the library gate on "Set as Startup Project".
+  const runnable = classified.filter((entry) => entry.classification.group === "runnable");
+  if (runnable.length === 0) {
+    vscode.window.showInformationMessage(
+      "No runnable (Exe/WinExe/web) projects were found in this workspace.",
+    );
+    return undefined;
+  }
+
   const items: StartupProjectQuickPickItem[] = [];
   let preselect: StartupProjectQuickPickItem | undefined;
   let firstRunnable: StartupProjectQuickPickItem | undefined;
-  for (const group of ["runnable", "test", "library"] as const) {
-    const inGroup = classified.filter((entry) => entry.classification.group === group);
-    if (inGroup.length === 0) {
-      continue;
+  for (const { project, classification } of runnable) {
+    const isPinned = project.uri.fsPath === pinned;
+    const item = toStartupProjectItem(project, classification, {
+      pinned: isPinned,
+      detail: details.get(project.uri.fsPath),
+    });
+    items.push(item);
+    if (isPinned) {
+      preselect = item;
     }
-    items.push({ label: GROUP_LABEL[group], kind: vscode.QuickPickItemKind.Separator });
-    for (const { project, classification } of inGroup) {
-      const isPinned = project.uri.fsPath === pinned;
-      const item = toStartupProjectItem(project, classification, {
-        pinned: isPinned,
-        detail: details.get(project.uri.fsPath),
-      });
-      items.push(item);
-      if (isPinned) {
-        preselect = item;
-      }
-      if (group === "runnable" && !firstRunnable) {
-        firstRunnable = item;
-      }
+    if (!firstRunnable) {
+      firstRunnable = item;
     }
   }
 
