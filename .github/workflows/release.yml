@@ -53,6 +53,11 @@ jobs:
       # Requires the repository secret VSCE_PAT: a PAT with "Marketplace > Manage" scope from the
       # Azure DevOps account that owns the publisher 'andreabruno'. Set it with:
       #   gh secret set VSCE_PAT
+      - name: Verify PAT (diagnostic)
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx @vscode/vsce verify-pat andreabruno -p "$VSCE_PAT"
+
       - name: Publish to VS Marketplace
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
