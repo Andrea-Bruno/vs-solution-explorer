@@ -1,0 +1,22 @@
+name: Verify PAT
+
+# Manual diagnostic: validates the VSCE_PAT secret against the Marketplace publisher without
+# publishing anything. Useful for testing a freshly created token before a real release.
+#
+#   gh workflow run verify-pat.yml -R Andrea-Bruno/vs-solution-explorer
+#   gh run watch <run-id> -R Andrea-Bruno/vs-solution-explorer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Verify PAT
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx @vscode/vsce verify-pat andreabruno -p "$VSCE_PAT"
