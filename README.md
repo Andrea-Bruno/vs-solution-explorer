@@ -1,9 +1,12 @@
 # C# Solution Explorer
 
 > **Community fork** of [Jomblebee's C# Solution Explorer](https://github.com/Jomblebee/csharp-solution-explorer)
-> (MIT). This fork adds a whole-solution **Search Files** filter to the tree. The badges and most
-> of the documentation below describe the original extension; keep the `upstream` remote to merge
-> new releases back in.
+> (MIT), published as **VS Solution Explorer**. This fork adds a whole-solution **Search Files**
+> filter, a Visual Studio-style **Start toolbar** (▶ + Debug/Release) and automated VS Marketplace
+> releases. The badges and most of the documentation below describe the original extension.
+>
+> Fork docs: **[Architecture](docs/architecture.md)** — design of every fork addition ·
+> **[Fork guide](docs/fork-guide.md)** — sync with upstream, releasing, open items.
 
 [![Open VSX](https://img.shields.io/open-vsx/v/jomblebee/jomblebee-csharp-solution-explorer?style=flat-square&label=Open%20VSX&color=a60ee5)](https://open-vsx.org/extension/jomblebee/jomblebee-csharp-solution-explorer)
 [![VS Marketplace](https://badgen.net/vs-marketplace/v/jomblebee.jomblebee-csharp-solution-explorer?label=VS%20Marketplace&color=0066b8)](https://marketplace.visualstudio.com/items?itemName=jomblebee.jomblebee-csharp-solution-explorer)
@@ -91,6 +94,9 @@ npm test
 ```
 
 Setup details, the test layout and the commit convention are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Fork-specific design and procedures — the file search, run toolbar, release automation, upstream
+sync and the open items — are in [Architecture](docs/architecture.md) and the
+[Fork guide](docs/fork-guide.md).
 
 ## License
 
