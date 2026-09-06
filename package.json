@@ -2,7 +2,7 @@
   "name": "csharp-solution-explorer-community",
   "displayName": "VS Solution Explorer",
   "description": "Bring the familiar Microsoft Visual Studio (2022/2026) experience to VS Code. A dedicated VS Solution Explorer shows your whole solution — including projects outside the opened folder — with Solution Folders, per-project Dependencies, file nesting, NuGet management, launch profiles, F5 debugging, a native Test Explorer and a whole-solution file search that filters the tree like Visual Studio's. Optional bundled Roslyn language server for IntelliSense. Community fork of Jomblebee's extension — the Visual Studio workflow everyone already knows, without the proprietary lock-in.",
-  "version": "0.16.2",
+  "version": "0.16.3",
   "publisher": "andreabruno",
   "license": "MIT",
   "repository": {
