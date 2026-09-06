@@ -74,6 +74,12 @@ export function registerF5Ownership(
  * Starts a session from an *inline* configuration — nothing is written to disk. The configuration
  * providers then do the real work: pick the project and framework, build, read launchSettings.json.
  *
+ * ▶ is unconditional, Visual-Studio style: with the bundled debugger enabled it always starts the
+ * startup project and never defers to VS Code's own start (which would need a launch.json or a
+ * picker). Anything a project needs to start — framework choice, launch profile, build — is
+ * resolved deterministically by the extension, or asked once when it genuinely cannot be guessed
+ * (multiple target frameworks, or no startup project chosen yet).
+ *
  * When `debug.f5Console` is `externalTerminal` or `integratedTerminal`, this defers to the same
  * spawn-then-attach flow as the "Debug Startup Project in External Terminal" command instead (hosted
  * in an OS window or a VS Code integrated terminal respectively) — see `externalTerminalDebug.ts` for
@@ -84,8 +90,18 @@ async function startDebugging(
   startInTerminal: (host: "external" | "integrated") => Promise<void>,
 ): Promise<void> {
   const startup = getStartupProjectFsPath();
-  if (!debuggerEnabled || !(await hasSomethingToDebug(startup))) {
-    await vscode.commands.executeCommand("workbench.action.debug.start");
+  if (!debuggerEnabled) {
+    // Our debugger is the only component that knows the startup project; VS Code's own start
+    // cannot be pointed at it. Say so instead of silently falling into the launch.json flow.
+    await vscode.window.showInformationMessage(
+      "The bundled C# debugger is disabled, so ▶ cannot start the startup project. Enable the setting csharpSolutionExplorer.debug.enabled.",
+    );
+    return;
+  }
+  if (!(await hasSomethingToDebug(startup))) {
+    await vscode.window.showInformationMessage(
+      "No runnable project was found in this workspace. Open a folder with a .csproj/.sln, set a startup project, then press ▶.",
+    );
     return;
   }
   const consoleMode = readF5ConsoleMode();

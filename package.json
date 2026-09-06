@@ -1248,11 +1248,7 @@
       "csharp-solution-explorer-activitybar": [
         {
           "id": "csharpSolutionExplorer.runControlsView",
-          "name": "Start"
-        },
-        {
-          "id": "csharpSolutionExplorer.searchBarView",
-          "name": "Search Files"
+          "name": "Run & Search"
         },
         {
           "id": "csharpSolutionExplorer.view",
@@ -1479,6 +1475,12 @@
         "command": "csharpSolutionExplorer.debug.startInExternalTerminal",
         "title": "Debug Startup Project in External Terminal",
         "icon": "$(terminal)",
+        "category": "C# Solution Explorer"
+      },
+      {
+        "command": "csharpSolutionExplorer.selectBuildConfiguration",
+        "title": "Build Configuration…",
+        "icon": "$(combobox)",
         "category": "C# Solution Explorer"
       },
       {
@@ -1899,6 +1901,11 @@
           "command": "csharpSolutionExplorer.debug.startInExternalTerminal",
           "when": "csharpSolutionExplorer.debug.available",
           "group": "navigation@3"
+        },
+        {
+          "command": "csharpSolutionExplorer.selectBuildConfiguration",
+          "when": "csharpSolutionExplorer.debug.available",
+          "group": "navigation@4"
         }
       ],
       "editor/title/context": [

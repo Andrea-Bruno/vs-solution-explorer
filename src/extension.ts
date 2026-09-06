@@ -10,7 +10,6 @@ import {
 import { configureMsbuild } from "./shared/msbuild.js";
 import { activateTestExplorer } from "./testExplorer/activate.js";
 import { registerSolutionExplorerCommands } from "./solutionExplorer/commands/commands.js";
-import { registerFileSearch } from "./solutionExplorer/search/registerFileSearch.js";
 import { registerRunControls } from "./solutionExplorer/runControls/registerRunControls.js";
 import {
   disposeBuildConfiguration,
@@ -45,8 +44,7 @@ export function activate(context: vscode.ExtensionContext): void {
   });
 
   registerSolutionExplorerCommands(context, provider, treeView);
-  registerFileSearch(context, provider, treeView);
-  registerRunControls(context);
+  registerRunControls(context, provider, treeView);
   registerAutoReveal(context, provider, treeView);
 
   context.subscriptions.push(

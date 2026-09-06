@@ -70,17 +70,10 @@
 
 Projects can be dragged between Solution Folders (or to the solution root) directly in the tree. A confirmation dialog is shown before the move (`csharpSolutionExplorer.confirmMove`).
 
-## Search Files in the Solution
+## Run & Search bar
 
-*Fork addition.* A **Search Files** search box sits above the Solution Explorer in the activity bar. Typing filters the tree Visual Studio style: only files whose name contains the typed text (case-insensitive substring, extension included) stay visible, with the folders and projects that lead to them — and matches are revealed and expanded automatically. The search covers every file the loaded solution references, including projects outside the opened workspace folder.
-
-- **✕** inside the box, **Escape**, or the **Clear File Search** (✕) title-bar button clears the filter and restores the full tree.
-- While a search is active the tree shows a filtered snapshot; the file watcher keeps it fresh by re-running the search when files change.
-- A "no matches" message appears under the tree when the filter finds nothing.
-
-## Start toolbar
-
-*Fork addition.* The **Start** row above the Solution Explorer recreates Visual Studio's toolbar for the common path:
+*Fork addition.* One slim row above the Solution Explorer recreates Visual Studio's toolbar and its
+search-in-explorer in a single control bar (▶, configuration dropdown, filter box).
 
 - **▶ Start** debugs the startup project — build, launch profile and framework are all resolved in
   memory, with no `launch.json` to create or maintain (falls back to VS Code's own start when the
@@ -92,3 +85,17 @@ Projects can be dragged between Solution Folders (or to the solution root) direc
 - The startup project itself is chosen with **Set as Startup Project** (project context menu) or the
   ▶ status-bar item. Only runnable projects — Exe/WinExe output or a Web/Blazor WebAssembly SDK — can
   become the startup project; class libraries are refused, exactly like Visual Studio.
+
+## Filtering the tree like Visual Studio's search
+
+The **filter box** in the same bar filters the Solution Explorer live, Visual Studio style: only
+files whose name contains the typed text (case-insensitive substring, extension included) stay
+visible, with the folders and projects that lead to them — and matches are revealed and expanded
+automatically. The search covers every file the loaded solution references, including projects
+outside the opened workspace folder.
+
+- **✕** inside the box, **Escape**, or the **Clear File Search** (✕) title-bar button clears the
+  filter and restores the full tree.
+- While a filter is active the tree shows a filtered snapshot; the file watcher keeps it fresh by
+  re-running the search when files change.
+- A "no matches" message appears under the tree when the filter finds nothing.

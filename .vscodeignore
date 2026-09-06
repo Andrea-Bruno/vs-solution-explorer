@@ -15,6 +15,7 @@ tsconfig.json
 **/.gitignore
 node_modules/**
 .gitignore
+NOTES.private.md
 .editorconfig
 .markdownlint.json
 artifacts/**
