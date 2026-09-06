@@ -10,6 +10,7 @@ import {
 import { configureMsbuild } from "./shared/msbuild.js";
 import { activateTestExplorer } from "./testExplorer/activate.js";
 import { registerSolutionExplorerCommands } from "./solutionExplorer/commands/commands.js";
+import { registerFileSearch } from "./solutionExplorer/search/registerFileSearch.js";
 import { checkDotnetSdk } from "./solutionExplorer/dotnetSdkNotifier.js";
 import { SolutionTreeDragAndDropController } from "./solutionExplorer/tree/dragAndDropController.js";
 import {
@@ -37,6 +38,7 @@ export function activate(context: vscode.ExtensionContext): void {
   });
 
   registerSolutionExplorerCommands(context, provider, treeView);
+  registerFileSearch(context, provider, treeView);
   registerAutoReveal(context, provider, treeView);
 
   context.subscriptions.push(
