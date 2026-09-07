@@ -1248,7 +1248,7 @@
       "csharp-solution-explorer-activitybar": [
         {
           "id": "csharpSolutionExplorer.runControlsView",
-          "name": "Run & Search"
+          "name": ""
         },
         {
           "id": "csharpSolutionExplorer.view",
@@ -1638,6 +1638,16 @@
           "command": "csharpSolutionExplorer.search.clear",
           "when": "view == csharpSolutionExplorer.view && csharpSolutionExplorer.searchActive",
           "group": "navigation@10"
+        },
+        {
+          "command": "csharpSolutionExplorer.debug.start",
+          "when": "view == csharpSolutionExplorer.view && csharpSolutionExplorer.debug.available",
+          "group": "navigation@12"
+        },
+        {
+          "command": "csharpSolutionExplorer.selectBuildConfiguration",
+          "when": "view == csharpSolutionExplorer.view && csharpSolutionExplorer.debug.available",
+          "group": "navigation@13"
         },
         {
           "command": "csharpSolutionExplorer.openPackageManager",
