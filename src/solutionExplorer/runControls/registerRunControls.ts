@@ -21,6 +21,8 @@ import { mergeBuildConfigurations, parseDeclaredConfigurations } from "./buildCo
 
 /** The single toolbar/search view id (contributed first in the activity-bar container). */
 export const RUN_CONTROLS_VIEW_ID = "csharpSolutionExplorer.runControlsView";
+/** The Solution Explorer tree view, whose search-driven expansion must unwind when the filter clears. */
+const SOLUTION_TREE_VIEW_ID = "csharpSolutionExplorer.view";
 /** Clears an active file filter (title-bar ✕ and the bar's own ✕/Esc). */
 export const CLEAR_FILE_SEARCH_COMMAND_ID = "csharpSolutionExplorer.search.clear";
 /** Context key set while the file filter is active; drives the title-bar clear button. */
@@ -60,6 +62,9 @@ export function registerRunControls(
     void vscode.commands.executeCommand("setContext", SEARCH_ACTIVE_CONTEXT_KEY, status.query !== "");
     if (status.state === "cleared") {
       treeView.message = undefined;
+      // Revealing the matches expanded their branches; with the filter gone the tree must not stay
+      // expanded by that search — collapse it back to its default state (Visual Studio behaviour).
+      void collapseSolutionTree();
       return;
     }
     if (status.state === "building") {
@@ -81,6 +86,16 @@ export function registerRunControls(
   const refreshState = (): void => void pushState(bar);
   onDidChangeLaunchProfileState(refreshState, undefined, subscriptions);
   onDidChangeBuildConfiguration(refreshState, undefined, subscriptions);
+}
+
+/** Collapses the Solution Explorer via its workbench title action; best-effort (the command
+ * exists only while the view does, and a stale call must never surface an error). */
+async function collapseSolutionTree(): Promise<void> {
+  try {
+    await vscode.commands.executeCommand(`workbench.actions.treeView.${SOLUTION_TREE_VIEW_ID}.collapseAll`);
+  } catch {
+    // nothing to collapse — the view is gone or the action is unavailable
+  }
 }
 
 /** Configurations declared by the current startup project ([] when none is set or readable). */
