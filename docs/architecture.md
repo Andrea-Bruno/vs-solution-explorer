@@ -19,8 +19,9 @@ container) plus a set of panels/views around it:
   `SolutionTreeDataProvider` (`src/solutionExplorer/tree/solutionTreeDataProvider.ts`).
 - The container `csharp-solution-explorer-activitybar` hosts, **in vertical order** (top first —
   order is the order in `contributes.views`):
-  1. **(fork)** the single control bar `csharpSolutionExplorer.runControlsView` — "Run & Search"
-     (▶ Start, build configuration, file filter),
+  1. **(fork)** the two-row control bar `csharpSolutionExplorer.runControlsView` — "Run & Search"
+     (▶ Start + build configuration on row one; file filter, **Show Current File** and **Track
+     Active Item** on row two),
   2. the tree view `csharpSolutionExplorer.view` — "Solution Explorer".
   Users can reorder these by dragging; the contributed order is only the default.
 - Panels (editor tabs, not views) cover NuGet, Project Properties, Options and the Test Run
@@ -29,12 +30,19 @@ container) plus a set of panels/views around it:
 
 ### The control bar (fork UI pattern)
 
-The single fork row is a slim `WebviewViewProvider` with inline HTML (nonce-based CSP, no `media/`
-assets), carrying ▶, the configuration dropdown and the file filter. Message contract:
+The fork bar is a two-row `WebviewViewProvider` with inline HTML (nonce-based CSP, no `media/`
+assets). Row one carries ▶ and the configuration dropdown (the "toolbar"); row two carries the file
+filter box and two icon-only buttons whose meaning lives in their tooltips, like VS:
+**Show Current File** (`revealActive` message → the existing `csharpSolutionExplorer.revealInTree`
+command) and **Track Active Item** (`setAutoReveal` message → writes the `autoReveal` setting, User
+scope). Icons are inline SVGs filled with `currentColor`; the track toggle shows a pressed state
+via `aria-pressed`/`.on`. Message contract:
 
 - Extension → view: `webview.postMessage({ type: "state", ... })` — the host is the source of truth
-  and pushes full state; the view never assumes anything.
-- View → extension: `postMessage({ type: "action", ... })` — e.g. `filter`/`start`/`config`.
+  and pushes full state (configurations, current configuration, startup name, `autoReveal`); the
+  view never assumes anything.
+- View → extension: `postMessage({ type: "action", ... })` — e.g. `filter`/`start`/`config`/
+  `revealActive`/`setAutoReveal`.
 - `retainContextWhenHidden: true` keeps the input value across view toggling.
 
 `makeNonce()` comes from `src/shared/webviewHtml.ts`. See `runControls/registerRunControls.ts` for
@@ -44,9 +52,10 @@ the complete example.
 
 ## 2. (fork) Filtering the tree like Visual Studio's search
 
-UI: the **filter box** at the right end of the Run & Search bar. Behaviour mirrors Visual Studio's
-Solution Explorer search: typing keeps only files whose **file name** contains the text, with the
-folders and projects that lead to them, and every match is auto-revealed/expanded.
+UI: the **filter box** on row two of the Run & Search bar (below the ▶/configuration row, exactly
+where VS puts its search-in-explorer). Behaviour mirrors Visual Studio's Solution Explorer search:
+typing keeps only files whose **file name** contains the text, with the folders and projects that
+lead to them, and every match is auto-revealed/expanded.
 
 ### Files
 
@@ -99,11 +108,13 @@ folders and projects that lead to them, and every match is auto-revealed/expande
 
 ---
 
-## 3. (fork) Run & Search bar — Start + build configuration
+## 3. (fork) Run & Search bar — Start, build configuration, navigation icons
 
-UI: the **Run & Search** row above the tree — a green ▶, the build-configuration dropdown and the
-file filter. It mirrors the parts of Visual Studio's toolbar people use most: *Start*,
-*Debug/Release*, and searching the explorer.
+UI: two rows above the tree that mirror Visual Studio's toolbar + search area. Row one: a green ▶
+and the build-configuration dropdown (*Start*, *Debug/Release*). Row two: the file filter (see §2)
+plus two VS-style navigation icons — **Show Current File** (one-shot reveal of the active editor's
+file via `csharpSolutionExplorer.revealInTree`) and **Track Active Item** (auto-reveal toggle).
+Both are icon-only; hover shows the tooltip, and the track toggle is latched (green) while on.
 
 ### Files
 
@@ -111,8 +122,20 @@ file filter. It mirrors the parts of Visual Studio's toolbar people use most: *S
 | --- | --- |
 | `src/solutionExplorer/runControls/buildConfigurationState.ts` | Persisted per-workspace configuration (module singleton, see §5). |
 | `src/solutionExplorer/runControls/buildConfigurations.ts` | Pure: parse `<Configurations>` from a csproj + merge with defaults (unit-tested). |
-| `src/solutionExplorer/runControls/registerRunControls.ts` | The bar (webview), filter funnel, clear command/context key, top-bar "Build Configuration…" quick pick. |
+| `src/solutionExplorer/runControls/registerRunControls.ts` | The bar (webview), filter funnel, clear command/context key, reveal/track messaging, `autoReveal` write + re-sync, top-bar "Build Configuration…" quick pick. |
 | edits | `extension.ts` (init/register), `commands/buildCommands.ts`, `debug/debugConfigurationProvider.ts`, `debug/externalTerminal/externalTerminalDebug.ts` (threading), `launchProfiles/launchProfileCommands.ts` + `workspaceProjects.ts` (startup gating). |
+
+### Show Current File & Track Active Item (VS-style navigation)
+
+- **Show Current File** is a one-shot: the icon posts `revealActive`, the host runs the existing
+  `csharpSolutionExplorer.revealInTree` command (same handler as the editor-tab "Show in Solution
+  Explorer"). It works regardless of the track toggle and silently no-ops for files the tree does
+  not contain.
+- **Track Active Item** is a latched toggle that writes the existing `autoReveal` setting
+  (`csharpSolutionExplorer.autoReveal`, **User** scope) — one shared state, so Settings/Options and
+  the bar cannot disagree. `extension.ts`'s `registerAutoReveal` reads that setting on every active
+  editor change; the bar re-syncs from a config-change listener pushed through the normal `state`
+  message.
 
 ### ▶ Start — no launch.json, ever
 

@@ -7,7 +7,7 @@
 | `csharpSolutionExplorer.confirmMove`               | `true`        | Show a confirmation dialog before a drag-and-drop move.                                            |
 | `csharpSolutionExplorer.nuget.checkForUpdates`     | `true`        | Check nuget.org for newer versions of direct packages and flag outdated ones.                      |
 | `csharpSolutionExplorer.fileNesting.enabled`       | `true`        | Group related files under a parent (e.g. `appsettings.*.json`, `.xaml.cs`).                        |
-| `csharpSolutionExplorer.autoReveal`                | `true`        | Automatically select the active editor's file in the Solution Explorer tree.                       |
+| `csharpSolutionExplorer.autoReveal`                | `true`        | Automatically select the active editor's file in the Solution Explorer tree — the **Track Active Item** toggle in the Run & Search bar switches this same setting. |
 | `csharpSolutionExplorer.debug.enabled`             | `true`        | Provide C# debugging via the bundled netcoredbg debugger; turn off to use another C# debug extension instead. |
 | `csharpSolutionExplorer.debug.handleF5`            | `true`        | Let F5 start the startup project directly, with no `launch.json` and no debugger picker.            |
 | `csharpSolutionExplorer.debug.ignoreLaunchJson`    | `true`        | Keep F5 on the startup project even when the workspace has its own `launch.json`; turn off to make `launch.json` the escape hatch again. |

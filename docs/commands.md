@@ -72,8 +72,9 @@ Projects can be dragged between Solution Folders (or to the solution root) direc
 
 ## Run & Search bar
 
-*Fork addition.* One slim row above the Solution Explorer recreates Visual Studio's toolbar and its
-search-in-explorer in a single control bar (▶, configuration dropdown, filter box).
+*Fork addition.* Two compact rows above the Solution Explorer recreate Visual Studio's toolbar and
+its search-in-explorer: the top row holds ▶ and the configuration dropdown, the one below the file
+search box and the two VS-style navigation icons.
 
 - **▶ Start** debugs the startup project — build, launch profile and framework are all resolved in
   memory, with no `launch.json` to create or maintain (falls back to VS Code's own start when the
@@ -82,14 +83,23 @@ search-in-explorer in a single control bar (▶, configuration dropdown, filter 
   plus any extra names a project declares via `<Configurations>Debug;Release;QA</Configurations>`.
   The choice is remembered per workspace and is passed as `-c`/`--configuration` to Build, Rebuild,
   Run, Test and every debug start.
+- **Show Current File** (icon on the search row) reveals and selects the file of the active editor
+  in the tree on demand — the equivalent of Visual Studio's sync-with-active-document. If the file
+  is not part of the solution the icon simply does nothing.
+- **Track Active Item** (toggle, icon on the search row) keeps the tree in sync while you edit:
+  switching to a file selects it in the tree automatically, and the tree also lands on the current
+  file when you bring it to the front. It is on by default and writes the `autoReveal` setting
+  (User scope), so it stays the way you left it and is also visible in Settings / Options. Turn it
+  off and only the **Show Current File** icon locates files.
+- Both icons carry no text — hover to see their tooltip, Visual Studio style.
 - The startup project itself is chosen with **Set as Startup Project** (project context menu) or the
   ▶ status-bar item. Only runnable projects — Exe/WinExe output or a Web/Blazor WebAssembly SDK — can
   become the startup project; class libraries are refused, exactly like Visual Studio.
 
 ## Filtering the tree like Visual Studio's search
 
-The **filter box** in the same bar filters the Solution Explorer live, Visual Studio style: only
-files whose name contains the typed text (case-insensitive substring, extension included) stay
+The **filter box** on the bar's second row filters the Solution Explorer live, Visual Studio style:
+only files whose name contains the typed text (case-insensitive substring, extension included) stay
 visible, with the folders and projects that lead to them — and matches are revealed and expanded
 automatically. The search covers every file the loaded solution references, including projects
 outside the opened workspace folder.
