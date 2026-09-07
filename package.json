@@ -1248,7 +1248,7 @@
       "csharp-solution-explorer-activitybar": [
         {
           "id": "csharpSolutionExplorer.runControlsView",
-          "name": ""
+          "name": "Run & Search"
         },
         {
           "id": "csharpSolutionExplorer.view",
