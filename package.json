@@ -1510,6 +1510,11 @@
         "category": "C# Solution Explorer"
       },
       {
+        "command": "csharpSolutionExplorer.openSolutionAsWorkspace",
+        "title": "Open Solution as Multi-Root Workspace",
+        "category": "C# Solution Explorer"
+      },
+      {
         "command": "csharpSolutionExplorer.openProjectFile",
         "title": "Open in Editor",
         "category": "C# Solution Explorer"
@@ -1850,6 +1855,11 @@
           "command": "csharpSolutionExplorer.openSolutionFile",
           "when": "view == csharpSolutionExplorer.view && viewItem == csharpSolutionExplorer.solution",
           "group": "0_open"
+        },
+        {
+          "command": "csharpSolutionExplorer.openSolutionAsWorkspace",
+          "when": "view == csharpSolutionExplorer.view && viewItem == csharpSolutionExplorer.solution",
+          "group": "0_open@1"
         },
         {
           "command": "csharpSolutionExplorer.openProjectFile",

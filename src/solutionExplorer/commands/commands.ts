@@ -25,6 +25,7 @@ import {
   OPEN_PROJECT_PROPERTIES_COMMAND_ID,
   OPEN_SETTINGS_COMMAND_ID,
   OPEN_SOLUTION_FILE_COMMAND_ID,
+  OPEN_SOLUTION_AS_WORKSPACE_COMMAND_ID,
   REFRESH_COMMAND_ID,
   RENAME_COMMAND_ID,
   RUN_PROJECT_COMMAND_ID,
@@ -105,6 +106,7 @@ import {
 } from "../launchProfiles/launchProfileCommands.js";
 import { copyToClipboard, paste } from "./clipboardCommands.js";
 import { openInTerminal, revealInOS, revealInTree } from "./revealCommands.js";
+import { openSolutionAsWorkspace } from "./workspaceCommands.js";
 import { OptionsPanel } from "../../options/optionsPanel.js";
 import { openProjectProperties } from "./propertiesCommands.js";
 
@@ -205,6 +207,9 @@ export function registerSolutionExplorerCommands(
     vscode.commands.registerCommand(CLEAN_COMMAND_ID, (item: ProjectTreeItem | SolutionTreeItem) => cleanTarget(item)),
     vscode.commands.registerCommand(OPEN_SOLUTION_FILE_COMMAND_ID, (item: SolutionTreeItem) =>
       vscode.window.showTextDocument(item.info.uri),
+    ),
+    vscode.commands.registerCommand(OPEN_SOLUTION_AS_WORKSPACE_COMMAND_ID, (item: unknown) =>
+      withErrorHandling(() => openSolutionAsWorkspace(item)),
     ),
     vscode.commands.registerCommand(OPEN_PROJECT_FILE_COMMAND_ID, (item: ProjectTreeItem) =>
       vscode.window.showTextDocument(item.info.uri),

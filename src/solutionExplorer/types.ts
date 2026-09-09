@@ -36,6 +36,7 @@ export const SELECT_LAUNCH_PROFILE_COMMAND_ID = "csharpSolutionExplorer.selectLa
 export const SELECT_STARTUP_PROJECT_COMMAND_ID = "csharpSolutionExplorer.selectStartupProject";
 export const NEW_PROJECT_COMMAND_ID = "csharpSolutionExplorer.newProject";
 export const OPEN_SOLUTION_FILE_COMMAND_ID = "csharpSolutionExplorer.openSolutionFile";
+export const OPEN_SOLUTION_AS_WORKSPACE_COMMAND_ID = "csharpSolutionExplorer.openSolutionAsWorkspace";
 export const OPEN_PROJECT_FILE_COMMAND_ID = "csharpSolutionExplorer.openProjectFile";
 export const OPEN_SETTINGS_COMMAND_ID = "csharpSolutionExplorer.openSettings";
 export const OPEN_OPTIONS_COMMAND_ID = "csharpSolutionExplorer.openOptions";

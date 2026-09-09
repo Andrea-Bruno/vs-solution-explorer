@@ -37,6 +37,7 @@
 | Delete                   | Project, Solution Folder, Folder, File |
 | Remove from Solution     | Project                                |
 | Open in Editor           | Project, Solution node                 |
+| Open Solution as Multi-Root Workspace | Solution node                 |
 | Open in Terminal         | Solution, Project, Folder              |
 | Show in Finder/Explorer  | Solution, Project, Folder, File        |
 | Show in Solution Explorer| Editor tab, Command Palette            |
@@ -59,6 +60,7 @@
 - **Reveal in Finder / File Explorer**: opens the selected item in the operating system's file manager (Finder on macOS, File Explorer on Windows, the default file manager on Linux). The menu label matches your platform.
 - **Show in Solution Explorer**: reveals and selects a file in the tree — from the editor tab's context menu or the Command Palette.
 - **Open in Editor**: opens the raw `.sln`/`.slnx` (on a solution) or `.csproj` (on a project) file in the editor. The project's own `.csproj` is not listed as a child file — use this command to open it.
+- **Open Solution as Multi-Root Workspace**: writes a `.code-workspace` next to the solution whose folders are every project's directory (plus the solution's own folder when projects live outside it, e.g. sibling repositories) and offers to reload VS Code into it. A solution often spans several folders/repositories, and a multi-root workspace makes all of them part of a single window. When every project lives inside the solution folder, the workspace file keeps that one folder and nothing is duplicated.
 - **Properties**: opens the project's csproj properties, package metadata and launch profiles as an editor tab — see [Project Properties](project-properties.md).
 - **Show Test Run Dashboard**: opens the live view of the current or last test run — progress, time
   estimate, failures and the slowest tests. It opens on its own when a run starts unless
