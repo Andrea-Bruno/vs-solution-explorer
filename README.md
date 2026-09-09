@@ -35,6 +35,7 @@ The long-term goal is a VS Code extension that gives C# (and Razor) developers e
 - **Options panel**: the extension's settings as an editor tab in the spirit of Visual Studio's Options dialog — grouped cards, User/Workspace scope switcher, search, per-setting reset. VS Code's built-in Settings editor stays one click away — see [Settings](docs/settings.md#two-ways-to-edit-these).
 - **File nesting** groups related files under a parent, like Visual Studio (`appsettings.*.json`, `.xaml.cs`, `.Designer.cs`, `.razor` companions). Toggle with `csharpSolutionExplorer.fileNesting.enabled`.
 - **Search Files**: the filter box in the **Run & Search** bar filters the tree Visual Studio style — only files whose name contains the typed text stay visible, with their parent chain revealed automatically. Searches every file the solution references, wherever the projects live on disk — [details](docs/commands.md#filtering-the-tree-like-visual-studios-search).
+- **Open Solution as Multi-Root Workspace**: makes the whole solution — every project it references, even those in other folders or other repositories — a single VS Code workspace, so shared or multi-folder solutions open fully in one window and coding agents can reach the entire solution without "outside the workspace" refusals — [see below](#the-whole-solution-as-one-workspace).
 - **Run & Search bar**: two compact rows above the Solution Explorer that recreate the Visual Studio toolbar. The top row carries a Visual Studio-style ▶ **Start** button and the build-configuration dropdown (Debug / Release, plus any `<Configurations>` a project declares); the row below carries the file search box and two VS-style navigation icons — **Show Current File** (finds and selects the file you are editing in the tree) and **Track Active Item** (keeps the tree following whichever file you switch to). Icons only, with the meaning on hover, just like Visual Studio. ▶ debugs the startup project with no launch.json needed; the chosen configuration drives Build/Rebuild/Run/Test and every debug start. Only runnable (Exe/WinExe/web) projects can be the startup project.
 - **Track Active Item / Show Current File**: exactly like Visual Studio's Solution Explorer — the tree follows the file you are editing (or you can switch that off and use the **Show Current File** icon when you want to locate it).
 - **Copy / Cut / Paste** files and folders between folders and projects, and **drag and drop** projects between Solution Folders.
@@ -65,6 +66,21 @@ Every project gets a Visual Studio-style **Dependencies** tree with live outdate
 The extension can host the open-source **Roslyn** language server itself: IntelliSense, diagnostics, hover, go-to-definition for C# — and Razor language features via cohosting, on by default. It stays off automatically when the Microsoft C# extension is installed.
 
 **[C# Language Server in detail →](docs/language-server.md)**
+
+## The whole solution as one workspace
+
+A **solution** is different from a single project: it may deliberately pull in projects that live in *other* folders or even other repositories — a shared library used by several solutions, a project kept in its own repository, or code that simply lives outside the folder you opened. But VS Code, by default, only sees the one folder you opened, so those projects were only browsable inside this extension's tree.
+
+**Open Solution as Multi-Root Workspace** (right-click the solution node in the Solution Explorer, or the Command Palette) removes that limit: it writes a `.code-workspace` file next to your `.sln`/`.slnx` whose folders are the directories of **every project the solution references**, and asks you to reload the window into it. After the reload the whole solution *is* the workspace: search, IntelliSense, source control, and every other VS Code feature now see all of it.
+
+Two rules keep the workspace tidy:
+
+- **All projects inside the solution's own folder** → the workspace keeps just that one folder, nothing is duplicated.
+- **Projects outside it** (shared libraries, sibling repositories, …) → each one is added as its own workspace root, together with the solution folder so you never lose your bearings.
+
+There is a practical payoff for **AI coding agents** too. Agents are confined to the workspace and refuse any operation that would touch a file outside it — so with only the solution's own folder open, an agent literally cannot edit the shared projects that sit elsewhere. Once the multi-root workspace is loaded, every project of the solution is inside the workspace, and agents have full read/write access to the entire solution, with no "outside the workspace" refusals.
+
+**[Command details →](docs/commands.md#command-details)**
 
 ## Commands & Settings
 
