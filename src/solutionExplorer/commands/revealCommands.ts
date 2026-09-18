@@ -30,6 +30,14 @@ export function revealInOS(item: unknown): void {
   }
 }
 
+/** Copies the node's full on-disk path (absolute, with the file name) to the clipboard. */
+export async function copyPathToClipboard(item: unknown): Promise<void> {
+  const uri = resolveNodeUri(item);
+  if (uri) {
+    await vscode.env.clipboard.writeText(uri.fsPath);
+  }
+}
+
 /** Reveals the active editor's file (or the passed URI) in the Solution Explorer tree. */
 export async function revealInTree(
   uri: vscode.Uri | undefined,

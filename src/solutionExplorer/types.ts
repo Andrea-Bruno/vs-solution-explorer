@@ -50,6 +50,7 @@ export const OPEN_IN_TERMINAL_COMMAND_ID = "csharpSolutionExplorer.openInTermina
 export const REVEAL_IN_FINDER_COMMAND_ID = "csharpSolutionExplorer.revealInFinder";
 export const REVEAL_IN_EXPLORER_COMMAND_ID = "csharpSolutionExplorer.revealInExplorer";
 export const REVEAL_IN_FILE_MANAGER_COMMAND_ID = "csharpSolutionExplorer.revealInFileManager";
+export const COPY_PATH_COMMAND_ID = "csharpSolutionExplorer.copyPath";
 
 export interface ProjectReference {
   typeGuid: string;

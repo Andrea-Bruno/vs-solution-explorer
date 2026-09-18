@@ -56,6 +56,7 @@ import {
   REVEAL_IN_FINDER_COMMAND_ID,
   REVEAL_IN_EXPLORER_COMMAND_ID,
   REVEAL_IN_FILE_MANAGER_COMMAND_ID,
+  COPY_PATH_COMMAND_ID,
 } from "../types.js";
 import {
   ExistingItemTarget,
@@ -105,7 +106,7 @@ import {
   setStartupProjectCommand,
 } from "../launchProfiles/launchProfileCommands.js";
 import { copyToClipboard, paste } from "./clipboardCommands.js";
-import { openInTerminal, revealInOS, revealInTree } from "./revealCommands.js";
+import { copyPathToClipboard, openInTerminal, revealInOS, revealInTree } from "./revealCommands.js";
 import { openSolutionAsWorkspace } from "./workspaceCommands.js";
 import { OptionsPanel } from "../../options/optionsPanel.js";
 import { openProjectProperties } from "./propertiesCommands.js";
@@ -239,5 +240,8 @@ export function registerSolutionExplorerCommands(
     vscode.commands.registerCommand(REVEAL_IN_FINDER_COMMAND_ID, (item: unknown) => revealInOS(item)),
     vscode.commands.registerCommand(REVEAL_IN_EXPLORER_COMMAND_ID, (item: unknown) => revealInOS(item)),
     vscode.commands.registerCommand(REVEAL_IN_FILE_MANAGER_COMMAND_ID, (item: unknown) => revealInOS(item)),
+    vscode.commands.registerCommand(COPY_PATH_COMMAND_ID, (item: unknown) =>
+      withErrorHandling(() => copyPathToClipboard(item ?? treeView.selection[0])),
+    ),
   );
 }

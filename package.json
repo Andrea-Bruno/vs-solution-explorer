@@ -1585,6 +1585,11 @@
         "category": "C# Solution Explorer"
       },
       {
+        "command": "csharpSolutionExplorer.copyPath",
+        "title": "Copy Path",
+        "category": "C# Solution Explorer"
+      },
+      {
         "command": "csharpSolutionExplorer.languageServer.showMenu",
         "title": "Server Actions…",
         "category": "C# Language Server"
@@ -1905,6 +1910,11 @@
           "command": "csharpSolutionExplorer.paste",
           "when": "view == csharpSolutionExplorer.view && csharpSolutionExplorer.clipboardHasItems && (viewItem == csharpSolutionExplorer.folder || viewItem =~ /^csharpSolutionExplorer\\.project(\\.nested)?$/)",
           "group": "5_clipboard@3"
+        },
+        {
+          "command": "csharpSolutionExplorer.copyPath",
+          "when": "view == csharpSolutionExplorer.view && (viewItem == csharpSolutionExplorer.solution || viewItem == csharpSolutionExplorer.folder || viewItem =~ /^csharpSolutionExplorer\\.file(\\.excluded)?$/ || viewItem =~ /^csharpSolutionExplorer\\.project(\\.nested)?$/)",
+          "group": "5_clipboard@4"
         }
       ],
       "editor/title": [
@@ -1950,6 +1960,10 @@
         },
         {
           "command": "csharpSolutionExplorer.revealInFileManager",
+          "when": "false"
+        },
+        {
+          "command": "csharpSolutionExplorer.copyPath",
           "when": "false"
         },
         {
