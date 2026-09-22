@@ -4,6 +4,23 @@ All notable changes to the "csharp-solution-explorer" extension will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.17.0] - 2026-09-22
+
+### Added
+
+- **Every project directory is a workspace folder.** A solution often pulls in projects that live
+  outside the folder you opened — a shared library used by several solutions, a project kept in its
+  own repository, or code that simply sits in a sibling folder. Until now those projects were only
+  browsable inside the extension's tree: VS Code saw just the one folder you opened, so search,
+  source control, the language server and AI coding agents could not reach them (agents refuse any
+  edit "outside the workspace"). Now, when the window opens, every project directory of the solution
+  that is not already inside the opened folder is added as a workspace folder automatically
+  (`csharpSolutionExplorer.workspace.autoIncludeProjectFolders`, on by default) — no reload, no
+  setup. It only ever adds folders and never removes any, skips projects already inside the
+  workspace, and keeps the outermost directory when one project nests inside another, so the tree
+  stays tidy. The existing **Open Solution as Multi-Root Workspace** command remains as the
+  file-based variant, for when you want the layout saved as a shareable `.code-workspace`.
+
 ## [0.16.0] - 2026-08-08
 
 ### Added

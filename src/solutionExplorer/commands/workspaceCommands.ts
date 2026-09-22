@@ -94,3 +94,85 @@ export async function openSolutionAsWorkspace(item: unknown): Promise<void> {
     await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(workspaceFile));
   }
 }
+
+const AUTO_INCLUDE_SETTING = "csharpSolutionExplorer.workspace.autoIncludeProjectFolders";
+
+/**
+ * "Auto-include project folders": with `csharpSolutionExplorer.workspace.autoIncludeProjectFolders`
+ * on (the default), every project directory of the solution(s) in the workspace that is not already
+ * inside a workspace folder is added as a workspace folder. A solution often pulls in shared projects
+ * that live outside the opened folder (sibling folders, other repositories); making each one a
+ * workspace root means search, source control, coding agents and the language server treat the whole
+ * solution as part of the workspace, with no "outside the workspace" boundary.
+ *
+ * Runs at activation and again when the setting is turned on. It only adds directories that are
+ * neither inside nor an ancestor of an existing workspace folder, so it is idempotent: the
+ * `onDidChangeWorkspaceFolders` event its own additions trigger never finds anything new to add.
+ */
+export async function autoIncludeSolutionProjectFolders(
+  context: vscode.ExtensionContext,
+): Promise<void> {
+  const enabled = (): boolean =>
+    vscode.workspace.getConfiguration().get<boolean>(AUTO_INCLUDE_SETTING, true);
+
+  const run = async (): Promise<void> => {
+    if (!enabled()) {
+      return;
+    }
+    try {
+      const solutions = await findWorkspaceSolutions();
+      if (solutions.length === 0) {
+        return;
+      }
+
+      const existing = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath);
+      // Skip a directory already inside a workspace folder, or one that would wrap an existing root and
+      // reshape the tree.
+      const skip = (dir: string): boolean =>
+        existing.some((f) => isSameOrBelow(dir, f) || isSameOrBelow(f, dir));
+
+      const candidates = new Map<string, string>();
+      for (const solution of solutions) {
+        for (const project of await listSolutionProjects(solution)) {
+          const dir = path.normalize(path.dirname(project.csprojUri.fsPath));
+          if (!skip(dir)) {
+            candidates.set(toComparable(dir), dir);
+          }
+        }
+      }
+      if (candidates.size === 0) {
+        return;
+      }
+
+      // Drop a candidate nested under another candidate — keep the outermost, like the manual command.
+      const all = [...candidates.values()];
+      const topLevel = all.filter((dir) => all.every((other) => other === dir || !isSameOrBelow(dir, other)));
+      topLevel.sort((a, b) => a.localeCompare(b));
+
+      const startIndex = vscode.workspace.workspaceFolders?.length ?? 0;
+      const added = vscode.workspace.updateWorkspaceFolders(
+        startIndex,
+        0,
+        ...topLevel.map((dir) => ({ uri: vscode.Uri.file(dir) })),
+      );
+      if (!added) {
+        return;
+      }
+      const plural = topLevel.length === 1 ? "" : "s";
+      void vscode.window.showInformationMessage(
+        `Added ${topLevel.length} shared project folder${plural} outside the opened folder to the workspace. Turn this off with "${AUTO_INCLUDE_SETTING}".`,
+      );
+    } catch {
+      // Best-effort: a solution that cannot be read must not disrupt activation or the setting toggle.
+    }
+  };
+
+  void run();
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration(AUTO_INCLUDE_SETTING)) {
+        void run();
+      }
+    }),
+  );
+}

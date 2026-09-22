@@ -10,6 +10,7 @@ import {
 import { configureMsbuild } from "./shared/msbuild.js";
 import { activateTestExplorer } from "./testExplorer/activate.js";
 import { registerSolutionExplorerCommands } from "./solutionExplorer/commands/commands.js";
+import { autoIncludeSolutionProjectFolders } from "./solutionExplorer/commands/workspaceCommands.js";
 import { registerRunControls } from "./solutionExplorer/runControls/registerRunControls.js";
 import {
   disposeBuildConfiguration,
@@ -46,6 +47,10 @@ export function activate(context: vscode.ExtensionContext): void {
   registerSolutionExplorerCommands(context, provider, treeView);
   registerRunControls(context, provider, treeView);
   registerAutoReveal(context, provider, treeView);
+
+  // Make every project directory of the solution a workspace folder, including shared projects that
+  // live outside the opened folder, before the language server starts so it can see them too.
+  void autoIncludeSolutionProjectFolders(context);
 
   context.subscriptions.push(
     provider,
