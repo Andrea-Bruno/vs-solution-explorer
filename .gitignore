@@ -20,6 +20,9 @@ samples/**/*.db-wal
 .claude/settings.local.json
 CLAUDE.md
 
+# Qwen Code local data (session memory, tmp, worktrees) — never commit, never publish
+.qwen/
+
 # Private (local-only) notes — never commit, never publish
 /NOTES.private.md
 
