@@ -4,6 +4,16 @@ All notable changes to the "csharp-solution-explorer" extension will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.17.1] - 2026-10-09
+
+### Fixed
+
+- **No more duplicate projects in the tree.** When a project lives outside the folder you opened,
+  the auto-include feature adds its directory as a workspace folder. That folder used to show the
+  same project twice: once flat at the root and once inside its solution. Now a project that already
+  appears inside a solution is never shown again as a separate root item. The solution keeps one
+  representation, with its projects nested inside it.
+
 ## [0.17.0] - 2026-09-22
 
 ### Added

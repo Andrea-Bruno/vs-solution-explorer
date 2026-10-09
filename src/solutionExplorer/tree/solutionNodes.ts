@@ -5,6 +5,7 @@ import { basenameWithoutExtension, toPosixRelative } from "../fsPathUtils.js";
 import { getStartupProjectFsPath } from "../launchProfiles/launchProfileState.js";
 import { buildSolutionTree, parseNestedProjects, parseSolutionFile, SolutionTreeNode } from "../parsers/slnParser.js";
 import { parseSlnxFile } from "../parsers/slnxParser.js";
+import { parseSolutionProjects } from "../../nuget/solutionProjects.js";
 import { ProjectInfo, SolutionInfo } from "../types.js";
 import {
   ProjectTreeItem,
@@ -16,10 +17,18 @@ import {
 /**
  * The tree roots: every `.sln`/`.slnx` in the workspace folders, or — when a folder has no solution
  * at all — the `.csproj` files sitting directly in it (a "pseudo solution").
+ *
+ * A project already shown nested under a solution root is never shown again as a pseudo-solution
+ * root. This matters because auto-include (and multi-root workspaces) can add a project's own
+ * directory as a workspace folder; without this check that folder would list the same `.csproj` flat
+ * at the root while it is also nested under its solution, duplicating every such project.
  */
 export async function getRootItems(): Promise<SolutionExplorerTreeItem[]> {
   const folders = vscode.workspace.workspaceFolders ?? [];
   const items: SolutionExplorerTreeItem[] = [];
+  // `.csproj` files already shown inside a solution root, so the pseudo-solution pass skips them.
+  const coveredCsproj = new Set<string>();
+  const foldersWithoutSolution: vscode.WorkspaceFolder[] = [];
 
   for (const folder of folders) {
     const exclude = new vscode.RelativePattern(folder, "**/{node_modules,bin,obj,.git,.vs}/**");
@@ -28,27 +37,61 @@ export async function getRootItems(): Promise<SolutionExplorerTreeItem[]> {
       ...(await vscode.workspace.findFiles(new vscode.RelativePattern(folder, "**/*.slnx"), exclude)),
     ].sort((a, b) => a.fsPath.localeCompare(b.fsPath));
 
-    if (slnUris.length > 0) {
-      for (const slnUri of slnUris) {
-        const relativeDir = toPosixRelative(folder.uri.fsPath, path.dirname(slnUri.fsPath));
-        const info: SolutionInfo = {
-          kind: "solution",
-          name: basenameWithoutExtension(slnUri.fsPath),
-          uri: slnUri,
-          relativeDir: relativeDir || undefined,
-        };
-        items.push(new SolutionTreeItem(info));
-      }
+    if (slnUris.length === 0) {
+      foldersWithoutSolution.push(folder);
       continue;
     }
 
+    for (const slnUri of slnUris) {
+      const relativeDir = toPosixRelative(folder.uri.fsPath, path.dirname(slnUri.fsPath));
+      const info: SolutionInfo = {
+        kind: "solution",
+        name: basenameWithoutExtension(slnUri.fsPath),
+        uri: slnUri,
+        relativeDir: relativeDir || undefined,
+      };
+      items.push(new SolutionTreeItem(info));
+      for (const key of await coveredCsprojKeys(slnUri)) {
+        coveredCsproj.add(key);
+      }
+    }
+  }
+
+  for (const folder of foldersWithoutSolution) {
     const csprojUris = await vscode.workspace.findFiles(new vscode.RelativePattern(folder, "*.csproj"));
     for (const csprojUri of csprojUris) {
+      if (coveredCsproj.has(comparablePath(csprojUri.fsPath))) {
+        continue;
+      }
       items.push(new ProjectTreeItem(toProjectInfo(csprojUri, true, undefined, undefined)));
     }
   }
 
   return items;
+}
+
+/**
+ * Comparable keys for every `.csproj` a solution references, resolved against the solution's own
+ * directory. Returns empty when the solution cannot be read, so an unreadable file never hides a
+ * pseudo-solution root.
+ */
+async function coveredCsprojKeys(solutionUri: vscode.Uri): Promise<string[]> {
+  try {
+    const text = new TextDecoder().decode(await vscode.workspace.fs.readFile(solutionUri));
+    const isSlnx = solutionUri.fsPath.toLowerCase().endsWith(".slnx");
+    const solutionDir = vscode.Uri.joinPath(solutionUri, "..");
+    return parseSolutionProjects(text, isSlnx).map((project) =>
+      comparablePath(vscode.Uri.joinPath(solutionDir, ...project.relativePath.split("/")).fsPath),
+    );
+  } catch {
+    return [];
+  }
+}
+
+/** A path key that compares equal regardless of separator style and, on Windows, letter case. */
+function comparablePath(fsPath: string): string {
+  const normalized = path.normalize(fsPath);
+  return process.platform === "win32" ? normalized.toLowerCase() : normalized;
 }
 
 /** Parses a solution file and turns its top-level entries into tree items. */
