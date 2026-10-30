@@ -121,8 +121,8 @@ Open / next steps:
 
 - [ ] **Marketplace validation** — the first manual upload ("VS Solution Explorer" v0.16.0) was in
       *Verifying* status; confirm the item is live and note its URL in this file.
-- [ ] **Create the Trusted Publishing policy** (§4) — required before an automated release can
-      publish.
+- [x] **Create the Trusted Publishing policy** (§4) — done 2026-10-30; the workflow publishes with
+      `--oidc` and the `VSCE_PAT` secret no longer exists.
 - [ ] **Try ▶ in anger** with and without Microsoft's C# Dev Kit installed. With C# Dev Kit present
       F5 belongs to Microsoft's stack by design; the toolbar ▶ still starts the fork's netcoredbg
       debugger — verify no double-debugger side effects.
