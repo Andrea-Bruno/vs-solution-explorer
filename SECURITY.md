@@ -3,7 +3,7 @@
 ## Supported versions
 
 Only the latest published version gets fixes. There are no maintenance branches — a fix ships as a
-new release on the VS Code Marketplace and Open VSX.
+new release on the VS Code Marketplace.
 
 | Version | Supported |
 |---------|-----------|
@@ -15,7 +15,7 @@ new release on the VS Code Marketplace and Open VSX.
 **Do not open a public issue.**
 
 Use GitHub's private reporting: go to the
-[Security tab](https://github.com/Jomblebee/csharp-solution-explorer/security) of this repository
+[Security tab](https://github.com/Andrea-Bruno/vs-solution-explorer/security) of this repository
 and choose **Report a vulnerability**. That opens a private advisory visible only to you and the
 maintainers.
 
