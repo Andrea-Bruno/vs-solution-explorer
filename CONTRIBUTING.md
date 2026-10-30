@@ -80,6 +80,20 @@ chore(lint): fail the lint script on any eslint warning
 
 One logical change per pull request. Update `CHANGELOG.md` when the change is visible to users.
 
+## Releasing (maintainers)
+
+From a clean `main` in sync with `origin/main`:
+
+```bash
+npm run release:patch   # or release:minor / release:major
+```
+
+The tag triggers `.github/workflows/release.yml`, which builds the VSIX, creates the GitHub Release
+and publishes to the VS Marketplace with `vsce publish --oidc` — Trusted Publishing, so there is no
+token and no secret to renew. A published version shows *Verifying* on the publisher page for a
+while before VS Code users receive it. The one-time publisher policy and the failure modes are in
+[fork-guide §4](docs/fork-guide.md#4-shipping-a-new-version); do not duplicate those steps here.
+
 ## Reporting problems
 
 Bugs and feature requests go through the [issue templates](.github/ISSUE_TEMPLATE). Security
