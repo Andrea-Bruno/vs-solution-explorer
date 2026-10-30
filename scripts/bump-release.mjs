@@ -6,7 +6,7 @@
 // Bumps package.json (and the lockfile), commits the bump as `chore: release v<version>`,
 // pushes that commit, and pushes the annotated tag `v<version>`. The tag push triggers
 // .github/workflows/release.yml, which builds the VSIX, attaches it to a GitHub Release and
-// publishes the extension to the VS Marketplace (`vsce publish` with the VSCE_PAT secret).
+// publishes the extension to the VS Marketplace (`vsce publish --oidc`, Trusted Publishing).
 //
 // Safety mirrors scripts/tag-release.mjs: refuses to run off `main` or with a dirty tree, and
 // verifies the local branch is in sync with origin before tagging — the Marketplace will not

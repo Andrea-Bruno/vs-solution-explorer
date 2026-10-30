@@ -219,7 +219,8 @@ copies it exactly (own key `csharpSolutionExplorer.buildConfiguration`, own emit
   `scripts/bump-release.mjs` (`npm run release:patch|minor|major`) bumps the version, commits
   `chore: release vX.Y.Z`, pushes the commit and the `v*` tag; `.github/workflows/release.yml`
   verifies tag == manifest version, runs `npm run package` + `npm run vsix`, creates a GitHub
-  Release with the VSIX, and publishes with `vsce` using the repository secret `VSCE_PAT`.
+  Release with the VSIX, and publishes with `vsce publish --oidc` (Trusted Publishing: GitHub's
+  OIDC token in place of a stored PAT).
 
 ---
 

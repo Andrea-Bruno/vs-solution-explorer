@@ -54,12 +54,16 @@ Notes:
 
 ## 4. Shipping a new version
 
-Prerequisite (one time): the repo secret `VSCE_PAT` — a PAT with **Marketplace → Manage** scope
-from the Azure account that owns the publisher `andreabruno`:
+Prerequisite (one time): a **Trusted Publishing** policy on the Marketplace publisher. On
+https://marketplace.visualstudio.com/manage → publisher `andreabruno` → **Trusted Publishing** →
+**Create**: policy name `Release workflow`, repository owner `Andrea-Bruno`, repository
+`vs-solution-explorer`, workflow `release.yml`, environment empty.
 
-```sh
-gh secret set VSCE_PAT -R Andrea-Bruno/vs-solution-explorer
-```
+No secret is stored and nothing expires: the workflow requests GitHub's OIDC token
+(`permissions: id-token: write`) and `vsce publish --oidc` exchanges it for a credential valid
+15 minutes. Each OIDC token can be exchanged only once. PATs are not used any more — global PATs
+in Azure DevOps are retired on 2026-12-01, and the repository secret `VSCE_PAT` was removed with
+this migration.
 
 Then, on a clean `main` in sync with `origin/main`:
 
@@ -76,7 +80,7 @@ What happens:
    - verifies the tag equals `package.json` `version`,
    - `npm ci` → `npm run package` → `npm run vsix`,
    - creates a **GitHub Release** with the `.vsix` attached,
-   - publishes to the **VS Marketplace** with `vsce` using `VSCE_PAT`.
+   - publishes to the **VS Marketplace** with `vsce publish --oidc` (Trusted Publishing).
 
 Manual alternative (same result): bump the version yourself, push the `chore: release` commit, then
 `npm run release:tag` (creates/pushes only the tag).
@@ -117,7 +121,8 @@ Open / next steps:
 
 - [ ] **Marketplace validation** — the first manual upload ("VS Solution Explorer" v0.16.0) was in
       *Verifying* status; confirm the item is live and note its URL in this file.
-- [ ] **Set the `VSCE_PAT` secret** (§4) before the first automated release.
+- [ ] **Create the Trusted Publishing policy** (§4) — required before an automated release can
+      publish.
 - [ ] **Try ▶ in anger** with and without Microsoft's C# Dev Kit installed. With C# Dev Kit present
       F5 belongs to Microsoft's stack by design; the toolbar ▶ still starts the fork's netcoredbg
       debugger — verify no double-debugger side effects.

@@ -11,6 +11,9 @@ jobs:
 
     permissions:
       contents: write
+      # Lets the job request GitHub's OIDC token, which the Marketplace exchanges for a
+      # short-lived publish credential (Trusted Publishing) — no stored PAT.
+      id-token: write
 
     steps:
       - uses: actions/checkout@v7
@@ -50,15 +53,8 @@ jobs:
           generate_release_notes: true
 
       # Publishes to the VS Code Marketplace (https://marketplace.visualstudio.com/items?itemName=andreabruno.csharp-solution-explorer-community).
-      # Requires the repository secret VSCE_PAT: a PAT with "Marketplace > Manage" scope from the
-      # Azure DevOps account that owns the publisher 'andreabruno'. Set it with:
-      #   gh secret set VSCE_PAT
-      - name: Verify PAT (diagnostic)
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: npx @vscode/vsce verify-pat andreabruno -p "$VSCE_PAT"
-
+      # Trusted Publishing: the OIDC token is exchanged for a credential valid 15 minutes, so no
+      # secret is stored and nothing expires. Requires a Trusted Publishing policy in the
+      # Marketplace publisher settings for this repository, workflow and (empty) environment.
       - name: Publish to VS Marketplace
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: npx @vscode/vsce publish --packagePath "${{ steps.vsix.outputs.file }}" -p "$VSCE_PAT"
+        run: npx vsce publish --packagePath "${{ steps.vsix.outputs.file }}" --oidc
