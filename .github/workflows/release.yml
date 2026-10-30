@@ -57,4 +57,4 @@ jobs:
       # secret is stored and nothing expires. Requires a Trusted Publishing policy in the
       # Marketplace publisher settings for this repository, workflow and (empty) environment.
       - name: Publish to VS Marketplace
-        run: npx vsce publish --packagePath "${{ steps.vsix.outputs.file }}" --oidc
+        run: npx @vscode/vsce publish --packagePath "${{ steps.vsix.outputs.file }}" --oidc

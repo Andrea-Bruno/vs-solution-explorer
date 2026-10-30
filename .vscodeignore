@@ -1,8 +1,10 @@
 .vscode
 .vscode/**
+.vscode-test
 .vscode-test/**
 .qwen
 .qwen/**
+.claude
 .claude/**
 .github/**
 docs/**
